@@ -1,5 +1,5 @@
 
-Première version du programme
+Première version du programme au format .py (Python) et .ipynb (Python Jupyter Notebook)
 
 Ce programme en Python 3.6 génère un fichier Excel à partir du fichier "data.xlsx" qui doit être dans le même dossier que le fichier Pyhon. 
 Ce fichhier Excel contient 14 feuilles : 
