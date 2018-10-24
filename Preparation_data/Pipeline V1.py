@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 import xlrd
@@ -17,13 +17,13 @@ import pandas as pd
 import calendar
 
 
-# In[2]:
+# In[3]:
 
 
 pd.set_option('display.float_format', lambda x: '%.2f' % x)
 
 
-# In[3]:
+# In[4]:
 
 
 def remove_duplicates(values):
@@ -42,7 +42,7 @@ def remove_duplicates(values):
     return output_index
 
 
-# In[4]:
+# In[5]:
 
 
 def date_format(data_frame):
@@ -64,7 +64,7 @@ def date_format(data_frame):
     return data_transpose
 
 
-# In[5]:
+# In[6]:
 
 
 def remove_duplicates_in_df(df):
@@ -74,7 +74,7 @@ def remove_duplicates_in_df(df):
     return df
 
 
-# In[6]:
+# In[7]:
 
 
 def no_na_preparation(df):
@@ -89,7 +89,7 @@ def no_na_preparation(df):
     return df_nona_t
 
 
-# In[116]:
+# In[8]:
 
 
 def get_new_column_names(df, df2,df_names):
@@ -100,7 +100,7 @@ def get_new_column_names(df, df2,df_names):
     return list_noms_colonnes
 
 
-# In[119]:
+# In[9]:
 
 
 def format_df(df,df2,data_unités,df_names):
@@ -138,7 +138,7 @@ def format_df(df,df2,data_unités,df_names):
     return df2
 
 
-# In[49]:
+# In[10]:
 
 
 def check_columns_with_unique_values(df):
@@ -151,7 +151,7 @@ def check_columns_with_unique_values(df):
     return list_indexes
 
 
-# In[130]:
+# In[18]:
 
 
 def preparation_data(df,data_unités):
@@ -165,18 +165,24 @@ def preparation_data(df,data_unités):
     data_final_just_data_no_duplicated.drop(columns = data_final_just_data.columns[list_indexes_to_delete],axis=1,inplace=True)
     #list_noms_colonnes = get_new_column_names(data_final,data_final_just_data_no_duplicated,data_final.loc['Adress'])
     #list_noms_colonnes.append('Date')
-    data_final = format_df(data_final_just_data_no_duplicated,data_final, data_unités,data_final.loc['Adress'])
+    copy_data_final_just_data_no_duplicated = data_final_just_data_no_duplicated.copy()
+    data_final = format_df(data_final,copy_data_final_just_data_no_duplicated, data_unités,data_final.loc['Adress'])
     return data_final, data_final_just_data_no_duplicated
 
 
-# In[ ]:
+# In[41]:
 
 
-#def Excel_for_Power_BI(df):
-    
+def Excel_for_Power_BI(df,df_model):
+    list_new_names_columns = []
+    df_copy = df.copy()
+    for i in range(len(df_copy.columns)):
+        list_new_names_columns.append(str(df_model.loc['Adress',i])+' en '+ str(df_model.loc['Unité',i]))
+    df_copy.columns = list_new_names_columns
+    return df_copy
 
 
-# In[30]:
+# In[13]:
 
 
 def save_df_in_excel(filename, df):
@@ -185,7 +191,25 @@ def save_df_in_excel(filename, df):
     writer.save()
 
 
-# In[9]:
+# In[39]:
+
+
+data_1.loc['Unité',0]
+
+
+# In[40]:
+
+
+str(data_1.loc['Adress',0])+' en '+ str(data_1.loc['Unité',0])
+
+
+# In[42]:
+
+
+Excel_for_Power_BI(data_1_just_data,data_1)
+
+
+# In[14]:
 
 
 data = pd.read_excel("13-06_13-07.xlsx",header=None)
@@ -193,8 +217,20 @@ data2 = pd.read_excel("13-07_27-09.xlsx",header=None)
 data_unités = pd.read_excel('UnitésV6.xlsx')
 
 
-# In[131]:
+# In[19]:
 
 
 data_1, data_1_just_data = preparation_data(data,data_unités)
+
+
+# In[20]:
+
+
+data_1
+
+
+# In[21]:
+
+
+data_1_just_data
 
