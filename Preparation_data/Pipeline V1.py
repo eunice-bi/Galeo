@@ -1,6 +1,11 @@
 
 # coding: utf-8
 
+# In[34]:
+
+
+# coding: utf-8
+
 # In[2]:
 
 
@@ -122,14 +127,13 @@ def format_df(df,df2,data_unités,df_names):
     new_list_texte = []
     for i in range(len(list_indexes)):
         new_list_texte.append(data_unités["Texte"].iloc[list_indexes[i]])
-    new_list_texte.append('Date')
+    #ew_list_texte.append('Date')
     new_list_units = []
     for i in range(len(list_indexes)):
         new_list_units.append(data_unités["Unité"].iloc[list_indexes[i]])
-    new_list_units.append('Date')
+    #new_list_units.append('Date')
 
-    list_noms_colonnes.append('Date')
-    df2['Date'] = df.iloc[0,:]
+    #ist_noms_colonnes.append('Date')
     df2.loc['Adress'] = list_noms_colonnes
     df2.loc["Texte"] = new_list_texte
     df2.loc["Unité"] = new_list_units
@@ -157,6 +161,7 @@ def check_columns_with_unique_values(df):
 def preparation_data(df,data_unités):
     data = date_format(df)
     data = remove_duplicates_in_df(data)
+    data_model = data.copy()
     data_not_duplicated = no_na_preparation(data)
     data_final = format_df(data,data_not_duplicated ,data_unités,data.iloc[1:,0])
     data_final_just_data = data_final.iloc[:-3,:-1]
@@ -167,6 +172,9 @@ def preparation_data(df,data_unités):
     #list_noms_colonnes.append('Date')
     copy_data_final_just_data_no_duplicated = data_final_just_data_no_duplicated.copy()
     data_final = format_df(data_final,copy_data_final_just_data_no_duplicated, data_unités,data_final.loc['Adress'])
+    list_date = data_model.iloc[0,:]
+    data_final_just_data_no_duplicated['Date'] = list_date
+    data_final['Date'] =list_date
     return data_final, data_final_just_data_no_duplicated
 
 
@@ -179,9 +187,12 @@ def Excel_for_Power_BI(df,df_model):
     for i in range(len(df_copy.columns)):
         list_new_names_columns.append(str(df_model.loc['Adress',i])+' en '+ str(df_model.loc['Unité',i]))
     df_copy.columns = list_new_names_columns
-    return df_copy
+    save_df_in_excel(filename[:-6]+'_PowerBi.xlsx', df)
+    return 'Excel for Power BI generated'
 
 
+def Excel_to_look(df,df_model):
+    return 'test coucou'
 # In[13]:
 
 
@@ -189,24 +200,6 @@ def save_df_in_excel(filename, df):
     writer = pd.ExcelWriter(filename)
     df.to_excel(writer,"Sheet") 
     writer.save()
-
-
-# In[39]:
-
-
-data_1.loc['Unité',0]
-
-
-# In[40]:
-
-
-str(data_1.loc['Adress',0])+' en '+ str(data_1.loc['Unité',0])
-
-
-# In[42]:
-
-
-Excel_for_Power_BI(data_1_just_data,data_1)
 
 
 # In[14]:
@@ -223,14 +216,57 @@ data_unités = pd.read_excel('UnitésV6.xlsx')
 data_1, data_1_just_data = preparation_data(data,data_unités)
 
 
-# In[20]:
+# In[72]:
 
 
-data_1
+def Excel_for_Power_BI(df,df_model,filename):
+    list_new_names_columns = []
+    df_copy = df.copy()
+    for i in df_model.columns:
+        list_new_names_columns.append(str(df_model.loc['Texte',i]) + str(df_model.loc['Adress',i])+' en '+ str(df_model.loc['Unité',i]))
+    list_new_names_columns[-1] = 'Date'
+    temp = list_new_names_columns[0]
+    list_new_names_columns[0] = 'Date'
+    list_new_names_columns[-1]  = temp
+    df_copy = df_copy[list_new_names_columns]
+    #df_copy.columns = list_new_names_columns
+    save_df_in_excel(filename+'_PowerBi.xlsx',df_copy)
+    return 'Excel for Power BI generated'
 
 
-# In[21]:
+# In[326]:
 
 
-data_1_just_data
+def Excel_to_look(df,df_model,filename):
+    df_min = df_model.iloc[:-3,:-1].min()
+    df_median = df_model.iloc[:-3,:-1].median()
+    df_max = df_model.iloc[:-3,:-1].max()
+    df_adresse = df_model.loc["Adress"][:-1]
+    df_adresse = pd.DataFrame(data=df_adresse)
+    #df_adresse.index = df_median.index.values
+    
+    min_adresse = pd.concat([df_adresse,df_min],axis=1,ignore_index=True)
+    #min_median = pd.DataFrame(min_median)
+    min_median = pd.concat([min_adresse,df_median],axis=1,ignore_index=True)
+    #min_median = pd.DataFrame(min_median)
+    min_median_df_inter = pd.concat([min_median, df_max],axis=1,ignore_index=True)
+    df_unité = df_model.loc["Unité"][:-1]
+    min_median_df = pd.concat([min_median_df_inter, df_unité],axis=1,ignore_index=True)
+    min_median_df = pd.DataFrame(min_median_df)
+    min_median_df.columns = ['adresse','min','median','max','unité']
+    min_median_df.index = df_model.loc['Texte'][:-1]
+    save_df_in_excel(filename+'_Observations.xlsx',min_median_df)
+    return 'Excel for Observations generated'
+
+
+# In[74]:
+
+
+Excel_for_Power_BI(data_1_just_data,data_1,'test_13_07')
+
+
+# In[327]:
+
+
+Excel_to_look(data_1_just_data,data_1,'test_13_07')
 
