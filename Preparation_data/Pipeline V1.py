@@ -270,3 +270,22 @@ Excel_for_Power_BI(data_1_just_data,data_1,'test_13_07')
 
 Excel_to_look(data_1_just_data,data_1,'test_13_07')
 
+
+# In[330]:
+
+
+save_df_in_excel('test_r2.xlsx', data_1_just_data)
+
+
+# In[337]:
+
+
+import rpy2.robjects as robjects
+robjects.r.source('test_r.R')
+
+
+# In[339]:
+
+
+df_just_data = pd.DataFrame.from_csv('myfile.csv')
+
