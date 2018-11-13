@@ -182,14 +182,26 @@ data_total = data_total.reset_index(drop=True)
 data_total.columns = range(len(data_total.columns))
 
 
-# In[23]:
+# In[24]:
+
+
+data_total = data_total.drop(data_total.index[13209:13213])
+
+
+# In[25]:
+
+
+data_total = data_total.reset_index(drop=True)
+
+
+# In[ ]:
 
 
 #We save the final dat frame which will be our dataset 
 
 
-# In[24]:
+# In[26]:
 
 
-pickle.dump(data_total, open( "data_total_V1.p", "wb" ) )
+pickle.dump(data_total, open( "data_total_V2.p", "wb" ) )
 
