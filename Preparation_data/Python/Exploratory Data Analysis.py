@@ -64,13 +64,6 @@ df = df.iloc[:-3,:]
 pickle.dump(df, open( "data_total_prepared_brut.p", "wb" ) )
 
 
-# In[8]:
-
-
-def from_df_column_to_list(df,index_column): 
-    return list(df.iloc[:,index_column])
-
-
 # In[9]:
 
 
