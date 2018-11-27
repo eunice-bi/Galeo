@@ -73,19 +73,6 @@ df = df.drop(columns='Date')
 df.columns = range(len(df.columns))
 
 
-# list_columns = df.iloc[-3,:]
-# list_columns['WEEKDAYS'] = 'WEEKDAYS'
-# list_columns['MONTHS'] = 'MONTHS'
-# list_columns['QUARTERS'] = 'QUARTERS'
-# list_columns['Energie'] =  'Energie totale'
-# list_columns.index = range(len(list_columns))
-# list_text = df.iloc[-2,:]
-# list_text['WEEKDAYS'] = 'WEEKDAYS'
-# list_text['MONTHS'] = 'MONTHS'
-# list_text['QUARTERS'] = 'QUARTERS'
-# list_text['Energie'] =  'Energie totale'
-# list_text.index = list_columns
-
 # In[9]:
 
 
@@ -116,12 +103,6 @@ size = len(list_columns)
 list_columns.update(pd.Series(['WEEKDAYS', 'MONTHS','QUARTERS','Energie'], index=[size-4, size-3,size-2,size-1]))
 
 
-# In[14]:
-
-
-list_columns
-
-
 # In[15]:
 
 
@@ -132,12 +113,6 @@ list_text = df.iloc[-2,:]
 
 
 list_text.index = range(len(list_text))
-
-
-# In[17]:
-
-
-list_text
 
 
 # In[18]:
@@ -211,12 +186,20 @@ pickle.dump(df_norm , open( "data_norm.p", "wb" ) )
 # In[29]:
 
 
-list_correlations = []
-for i in range(len(df_norm.columns)):
-    list_correlations.append(get_correlation_target(df_norm,i,df_norm.Energie))
+pickle.dump(df_norm.Energie , open( "target.p", "wb" ) )
 
 
 # In[30]:
+
+
+list_correlations = [get_correlation_target(df_norm,i,df_norm.Energie) for i in range(len(df_norm.columns))]
+
+
+# list_correlations = []
+# for i in range(len(df_norm.columns)):
+#     list_correlations.append(get_correlation_target(df_norm,i,df_norm.Energie))
+
+# In[31]:
 
 
 df_correlations = pd.DataFrame([list_correlations],columns=list_columns[:-1]).transpose()
@@ -224,31 +207,31 @@ df_correlations.columns = ['Corrélation avec Energie totale']
 df_correlations["Texte"] = list_text[:-1]
 
 
-# In[31]:
+# In[32]:
 
 
 df_correlations_08 = df_correlations[abs(df_correlations['Corrélation avec Energie totale'])>0.8]
 
 
-# In[32]:
+# In[33]:
 
 
 pickle.dump(df_correlations_08, open( "data_corr_08.p", "wb" ) )
 
 
-# In[33]:
+# In[34]:
 
 
 list_columns = list(list_columns)
 
 
-# In[34]:
+# In[35]:
 
 
 list_correlations_08 = list(df_correlations_08.index.values)
 
 
-# In[35]:
+# In[36]:
 
 
 list_index = []
@@ -257,7 +240,7 @@ for val in list_correlations_08:
         list_index.append(list_columns.index(val))
 
 
-# In[39]:
+# In[37]:
 
 
 pickle.dump(list_index, open( "list_index.p", "wb" ) )
