@@ -51,7 +51,7 @@ def save_df_in_excel(filename, df):
 # In[5]:
 
 
-def get_correlation_Energie_totale(df,index_column,target):
+def get_correlation_target(df,index_column,target):
     return stats.pearsonr(df.iloc[:,index_column],target)[0]
 
 
@@ -213,7 +213,7 @@ pickle.dump(df_norm , open( "data_norm.p", "wb" ) )
 
 list_correlations = []
 for i in range(len(df_norm.columns)):
-    list_correlations.append(get_correlation_Energie_totale(df_norm,i,df_norm.Energie))
+    list_correlations.append(get_correlation_target(df_norm,i,df_norm.Energie))
 
 
 # In[30]:
