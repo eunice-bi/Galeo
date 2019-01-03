@@ -350,11 +350,11 @@ def all_dates_to_numbers(df):
     df['QUARTERS'] = quarters
 
 
-# In[23]:
+# In[38]:
 
 
 #Get indexes of columns with Energy data 
-def get_list_indexes_of_Energies(df):
+def get_list_indexes_of_Energie_active(df):
     list_Energies = []
     list_adress = df.loc['Adress']
     for i in range(len(df.loc['Adress'])-1):
