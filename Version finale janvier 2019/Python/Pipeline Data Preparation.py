@@ -350,44 +350,69 @@ def all_dates_to_numbers(df):
     df['QUARTERS'] = quarters
 
 
-# In[38]:
+# In[23]:
 
 
-#Get indexes of columns with Energy data 
-def get_list_indexes_of_Energie_active(df):
+#Get indexes of all columns with Energy data
+def get_list_indexes_of_Energies(df):
     list_Energies = []
     list_adress = df.loc['Adress']
     for i in range(len(df.loc['Adress'])-1):
         if(pd.notnull(list_adress[i])==True):
-            if(list_adress[i][:14] == 'Energie active'):
-                if(list_adress[i]!='Energie active TGBT Bat B TDP_04_B1'):
-                    list_Energies.append(i)
+            if(list_adress[i][:7] == 'Energie'):
+                list_Energies.append(i)
     return list_Energies
 
 
 # In[24]:
 
 
-#Modify Energie data in data frame
-def prepare_Energie_in_df(df):
+#Remove all columns with Energy data
+def remove_all_Energies(df):
     indexes_energie = get_list_indexes_of_Energies(df.iloc[:,:-4])
-    df_energie = df.copy()
-    df_energie = df_energie[indexes_energie]
-    df_energie = df_energie.iloc[:-2,:]
     df=df.drop(columns=indexes_energie)
-    return df,df_energie
+    return df
 
 
 # In[25]:
 
 
-#Get the column of total energy
-def get_target_Energie_totale(df_energie):
-    df_energie_total= df_energie.iloc[:-1,:-1].sum(axis=1)
-    return df_energie_total
+#Get indexes of columns with Active Energy data 
+def get_list_indexes_of_Energie_active(df):
+    list_Energies = []
+    list_adress = df.loc['Adress']
+    for i in range(len(df.loc['Adress'])-1):
+        if(pd.notnull(list_adress[i])==True):
+            if(list_adress[i][:14] == 'Energie active'):
+                #Remove bug value in Energie active columns
+                if(list_adress[i]!='Energie active TGBT Bat B TDP_04_B1'):
+                    list_Energies.append(i)
+    return list_Energies
 
 
 # In[26]:
+
+
+#Modify Energie data in data frame
+def prepare_Energie_in_df(df):
+    indexes_energie_active = get_list_indexes_of_Energie_active(df.iloc[:,:-4])
+    df_energie = df.copy()
+    df_energie = df_energie[indexes_energie_active]
+    df_energie = df_energie.iloc[:-2,:]
+    df = remove_all_Energies(df)
+    return df,df_energie
+
+
+# In[27]:
+
+
+#Get the column of total energy
+def get_target_Energie_totale(df_energie):
+    df_energie_totale= df_energie.iloc[:-1,:-1].sum(axis=1)
+    return df_energie_totale
+
+
+# In[28]:
 
 
 #This function launch building of two Excel files : one to look at the data and the other one to launch it on Power BI
@@ -400,11 +425,11 @@ def build_excels(df_data,df_just_data,filename):
     Excel_for_Power_BI(df_just_data_copy,df_copy,filename)
 
 
-# In[27]:
+# In[29]:
 
 
 #Launch preparation on brut data to get prepared data with the target
-def launch_preparation(df,data_unités,filename):   
+def launch_pipeline(df,data_unités,filename):   
     data = preparation_data(df,data_unités)
     build_excels(data,data.iloc[:-3,:],filename)
     all_dates_to_numbers(data)
@@ -414,61 +439,68 @@ def launch_preparation(df,data_unités,filename):
     return data,energie
 
 
-# In[28]:
-
-
-all_floors_names = [[1,'Local CTA'],[2,'Local CTA RIE'],[3,'Lot CVC Terasse B'],[4,'Lot CVC Terasse A'],[5,'Lot CVC Terasse A numero 2 '],[6,'Local Clim'],[7,'Local CPCU'],[8,'Local GF'],[9,'Lot CVC Terasse B numero 2'],[21,'A-RDC'],[22,'A-1'],[23,'A-2'],[24,'A-3'],[25,'A-4'],[26,'A-5'],[27,'A-6'],[28,'A-7'],[29,'A-Mez'],[30,'A-Meteo'],[31,'B-RDC'],[32,'B-1'],[33,'B-2'],[34,'B-3'],[35,'B-4'],[36,'B-5'],[37,'B-Meteo'],[38,'B-RDC2']]
-
-
-# In[29]:
-
-
-data_unités = pd.read_excel('Unités_ref.xlsx')
-
-
 # In[30]:
 
 
-df = pickle.load(open("data_total.p", "rb") )
+#List of locations in regards of BACnet adress
+all_floors_names = [[1,'Local CTA'],[2,'Local CTA RIE'],[3,'Lot CVC Terasse B'],[4,'Lot CVC Terasse A'],[5,'Lot CVC Terasse A numero 2 '],[6,'Local Clim'],[7,'Local CPCU'],[8,'Local GF'],[9,'Lot CVC Terasse B numero 2'],[21,'A-RDC'],[22,'A-1'],[23,'A-2'],[24,'A-3'],[25,'A-4'],[26,'A-5'],[27,'A-6'],[28,'A-7'],[29,'A-Mez'],[30,'A-Meteo'],[31,'B-RDC'],[32,'B-1'],[33,'B-2'],[34,'B-3'],[35,'B-4'],[36,'B-5'],[37,'B-Meteo'],[38,'B-RDC2']]
 
 
 # In[31]:
 
 
-df_validation = pickle.load(open("data_validation.p", "rb") )
+#We get the Units Excel file
+data_unités = pd.read_excel('Unités_ref.xlsx')
 
 
 # In[32]:
 
 
-data,data_energie = launch_preparation(df,data_unités,"data_total")   
+#We load the data frame from the "Build data set" Python file
+df = pickle.load(open("data_total.p", "rb") )
 
 
 # In[33]:
 
 
-data_validation,data_validation_energie = launch_preparation(df_validation,data_unités,"data_validation")  
+#We load the second data frame from the "Build data set" Python file
+df_validation = pickle.load(open("data_validation.p", "rb") )
 
 
 # In[34]:
 
 
-pickle.dump(data, open( "data_total_prepared.p", "wb" ) )
+#Launch pipeline on the data frame
+data,data_energie = launch_pipeline(df,data_unités,"data_total")   
 
 
 # In[35]:
 
 
-pickle.dump(data_energie, open( "data_total_energie.p", "wb" ) )
+#Launch pipeline on the second data frame
+data_validation,data_validation_energie = launch_pipeline(df_validation,data_unités,"data_validation")  
 
 
 # In[36]:
 
 
-pickle.dump(data_validation, open( "data_validation_total_prepared.p", "wb" ) )
+#Save in files the prepared data frame
+pickle.dump(data, open( "data_total_prepared.p", "wb" ) )
 
 
 # In[37]:
+
+
+pickle.dump(data_energie, open( "data_total_energie.p", "wb" ) )
+
+
+# In[38]:
+
+
+pickle.dump(data_validation, open( "data_validation_total_prepared.p", "wb" ) )
+
+
+# In[39]:
 
 
 pickle.dump(data_validation_energie, open( "data_validation_energie.p", "wb" ) )
