@@ -28,9 +28,9 @@ pd.set_option('display.float_format', lambda x: '%.2f' % x)
 
 
 #Put in the same column date and time
-def date_format(df):
+def date_format(df,first_row_value):
     list_date = []
-    for i in range(1,len(df)):
+    for i in range(first_row_value,len(df)):
         list_date.append(df.iloc[i,0].combine(df.iloc[i,0],df.iloc[i,1]))
     list_date.insert(0,'Date')
     return list_date
@@ -132,7 +132,7 @@ def get_indexes_columns_with_unique_values(df):
 #Launch all the previous functions to get a prepared data frame 
 def preparation_data(df,data_unités):
     data = df.copy()
-    dates_bon_format = date_format(data)
+    dates_bon_format = date_format(data,1)
     data.iloc[:,0] = dates_bon_format
     data.iloc[:,1] = data.iloc[:,0]
     data = data.drop(columns=[0])
@@ -429,7 +429,7 @@ def build_excels(df_data,df_just_data,filename):
 
 
 #Launch preparation on brut data to get prepared data with the target
-def launch_pipeline(df,data_unités,filename):   
+def launch_pipeline_learning_set(df,data_unités,filename):   
     data = preparation_data(df,data_unités)
     build_excels(data,data.iloc[:-3,:],filename)
     all_dates_to_numbers(data)
@@ -442,65 +442,113 @@ def launch_pipeline(df,data_unités,filename):
 # In[30]:
 
 
+def prepare_columns_validation_set(df_validation):
+    df_validation.columns = df_validation.loc[0]
+    df_validation = df_validation.drop(0) 
+    return df_validation
+
+
+# In[31]:
+
+
+def add_adress_texts_units(data,df_validation):
+    data_validation = pd.DataFrame()
+    adress_data_learning = data.loc['Adress'][:-5]
+    text_data_learning = data.loc['Texte'][:-5]
+    unit_data_learning = data.loc['Unité'][:-5]
+    data_validation = df_validation[adress_data_learning]
+    adress_data_learning.index = data_validation.columns.values
+    text_data_learning.index = data_validation.columns.values
+    unit_data_learning.index = data_validation.columns.values
+    data_validation = data_validation.append(adress_data_learning,ignore_index=False)
+    data_validation.iloc[-1,:].rename("Adress")
+    data_validation = data_validation.append(text_data_learning,ignore_index=False)
+    data_validation.iloc[-1,:].rename("Texte")
+    data_validation = data_validation.append(unit_data_learning,ignore_index=False)
+    data_validation.iloc[-1,:].rename("Unité")
+    return data_validation
+
+
+# In[32]:
+
+
+def launch_pipeline_validation_set(df_validation,filename):   
+    df_validation = prepare_columns_validation_set(df_validation) 
+    dates_bon_format = date_format(df_validation,0)
+    data_validation = add_adress_texts_units(data,df_validation)
+    dates_bon_format.remove('Date')
+    data_validation.columns = range(len(data_validation.columns))
+    for i in range(3):
+        dates_bon_format.append("0")
+    data_validation['Date'] = dates_bon_format
+    all_dates_to_numbers(data_validation)
+    data_validation,energie_validation = prepare_Energie_in_df(data_validation)
+    data_validation_energie = get_target_Energie_totale(energie_validation)
+    data_validation["Energie"] = data_validation_energie
+    return data_validation,data_validation_energie
+
+
+# In[33]:
+
+
 #List of locations in regards of BACnet adress
 all_floors_names = [[1,'Local CTA'],[2,'Local CTA RIE'],[3,'Lot CVC Terasse B'],[4,'Lot CVC Terasse A'],[5,'Lot CVC Terasse A numero 2 '],[6,'Local Clim'],[7,'Local CPCU'],[8,'Local GF'],[9,'Lot CVC Terasse B numero 2'],[21,'A-RDC'],[22,'A-1'],[23,'A-2'],[24,'A-3'],[25,'A-4'],[26,'A-5'],[27,'A-6'],[28,'A-7'],[29,'A-Mez'],[30,'A-Meteo'],[31,'B-RDC'],[32,'B-1'],[33,'B-2'],[34,'B-3'],[35,'B-4'],[36,'B-5'],[37,'B-Meteo'],[38,'B-RDC2']]
 
 
-# In[31]:
+# In[34]:
 
 
 #We get the Units Excel file
 data_unités = pd.read_excel('Unités_ref.xlsx')
 
 
-# In[32]:
+# In[35]:
 
 
 #We load the data frame from the "Build data set" Python file
 df = pickle.load(open("data_total.p", "rb") )
 
 
-# In[33]:
+# In[36]:
 
 
 #We load the second data frame from the "Build data set" Python file
 df_validation = pickle.load(open("data_validation.p", "rb") )
 
 
-# In[34]:
+# In[37]:
 
 
 #Launch pipeline on the data frame
-data,data_energie = launch_pipeline(df,data_unités,"data_total")   
+data,data_energie = launch_pipeline_learning_set(df,data_unités,"data_total")   
 
 
-# In[35]:
+# In[38]:
 
 
-#Launch pipeline on the second data frame
-data_validation,data_validation_energie = launch_pipeline(df_validation,data_unités,"data_validation")  
+data_validation, data_validation_energie = launch_pipeline_validation_set(df_validation,"validation")
 
 
-# In[36]:
+# In[39]:
 
 
 #Save in files the prepared data frame
 pickle.dump(data, open( "data_total_prepared.p", "wb" ) )
 
 
-# In[37]:
+# In[40]:
 
 
 pickle.dump(data_energie, open( "data_total_energie.p", "wb" ) )
 
 
-# In[38]:
+# In[41]:
 
 
 pickle.dump(data_validation, open( "data_validation_total_prepared.p", "wb" ) )
 
 
-# In[39]:
+# In[42]:
 
 
 pickle.dump(data_validation_energie, open( "data_validation_energie.p", "wb" ) )
