@@ -34,6 +34,7 @@ Données en entrées : Le fichier servant de référence pour les unités des ad
  
 
 Fonctions utilisées :
+
 •	« launch_pipeline » : Lancement de toute la pipe line pour préparer les données c’est-à-dire :
   o	Changement du format de la date en une seule colonne 
   o	Remplissage des valeurs nulles de façon linéaire
