@@ -2,7 +2,7 @@
 
 Ce GitHub comprend 3 dossiers :
 - "Etude liste des points" :
-  Premiers essais pour sortir les données traitées (séparation des adresses BACnt, Min, Max...) sous forme de Excel
+  Premiers essais pour sortir les données traitées (séparation des adresses BACnEt, Min, Max...) sous forme de Excel
 
 - "Preparation_data" : 
   Première version des codes pour réaliser le modèle prédictif
