@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 import xlrd
@@ -24,7 +24,7 @@ from pandas.tseries.offsets import BDay
 pd.set_option('display.float_format', lambda x: '%.2f' % x)
 
 
-# In[2]:
+# In[3]:
 
 
 #Put in the same column date and time
@@ -36,7 +36,7 @@ def date_format(df,first_row_value):
     return list_date
 
 
-# In[3]:
+# In[4]:
 
 
 #Replace NA values by using Linear method
@@ -50,7 +50,7 @@ def remove_na(df):
     return df_nona
 
 
-# In[4]:
+# In[5]:
 
 
 #Get list of adresses 
@@ -69,7 +69,7 @@ def get_list_adresses(list_noms_colonnes,list_adress_units_files):
     return list_indexes
 
 
-# In[5]:
+# In[6]:
 
 
 #Get text or unit by indexes 
@@ -80,7 +80,7 @@ def get_list_text_or_units(list_indexes,data_unités_text_or_units):
     return new_list_texte 
 
 
-# In[6]:
+# In[7]:
 
 
 #Get the columns names 
@@ -92,7 +92,7 @@ def get_new_column_names(df,df_names):
     return list_noms_colonnes
 
 
-# In[7]:
+# In[8]:
 
 
 #We add rows : "Adresse", "Texte" and "Unité"
@@ -112,7 +112,7 @@ def format_df(df,df2,data_unités,df_names):
     return df2
 
 
-# In[8]:
+# In[9]:
 
 
 #Get indexes of columns with unique values 
@@ -126,7 +126,7 @@ def get_indexes_columns_with_unique_values(df):
     return list_indexes
 
 
-# In[9]:
+# In[10]:
 
 
 #Launch all the previous functions to get a prepared data frame 
@@ -149,7 +149,7 @@ def preparation_data(df,data_unités):
     return data_final
 
 
-# In[10]:
+# In[11]:
 
 
 #Save data frame as Excel 
@@ -159,7 +159,7 @@ def save_df_in_excel(filename, df):
     writer.save()
 
 
-# In[11]:
+# In[12]:
 
 
 #Put date as first column 
@@ -180,7 +180,7 @@ def Date_at_first_column(df_data):
     return df_copy
 
 
-# In[12]:
+# In[13]:
 
 
 def truncate(number, digits) -> float:
@@ -188,7 +188,7 @@ def truncate(number, digits) -> float:
     return math.trunc(stepper * number) / stepper
 
 
-# In[13]:
+# In[14]:
 
 
 #When you have a list of two columns and the first column is a key to get access to a value in a second column
@@ -199,7 +199,7 @@ def search_value_in_list_first_column(list,value):
     return -1
 
 
-# In[14]:
+# In[15]:
 
 
 #Prepare Excel just for Power BI 
@@ -216,7 +216,7 @@ def Excel_for_Power_BI(df,df_model,filename):
     return 'Excel for Power BI generated'
 
 
-# In[15]:
+# In[16]:
 
 
 #Transfrom part of BACnet adress into list
@@ -231,7 +231,7 @@ def code_to_list(list_adress_decompose,value):
     return list_codes
 
 
-# In[16]:
+# In[17]:
 
 
 #Find index by its value
@@ -243,7 +243,7 @@ def get_index_of_value(liste,condition_value):
     return list_index
 
 
-# In[17]:
+# In[18]:
 
 
 def Prepare_Excel_to_look(df):
@@ -291,7 +291,7 @@ def Prepare_Excel_to_look(df):
     return df
 
 
-# In[18]:
+# In[19]:
 
 
 def Excel_to_look(df,filename):
@@ -300,7 +300,7 @@ def Excel_to_look(df,filename):
     return 'Excel to look generated'
 
 
-# In[19]:
+# In[20]:
 
 
 def add_weekdays(df):
@@ -310,7 +310,7 @@ def add_weekdays(df):
     return list_week_days
 
 
-# In[20]:
+# In[21]:
 
 
 def add_months(df):
@@ -320,7 +320,7 @@ def add_months(df):
     return list_months
 
 
-# In[21]:
+# In[22]:
 
 
 def get_quarters(list_months):
@@ -330,7 +330,7 @@ def get_quarters(list_months):
     return list_quarters
 
 
-# In[22]:
+# In[23]:
 
 
 #Add weekdays, months and quartes as features in data frame
@@ -350,69 +350,89 @@ def all_dates_to_numbers(df):
     df['QUARTERS'] = quarters
 
 
-# In[23]:
-
-
-#Get indexes of all columns with Energy data
-def get_list_indexes_of_Energies(df):
-    list_Energies = []
-    list_adress = df.loc['Adress']
-    for i in range(len(df.loc['Adress'])-1):
-        if(pd.notnull(list_adress[i])==True):
-            if(list_adress[i][:7] == 'Energie'):
-                list_Energies.append(i)
-    return list_Energies
-
-
 # In[24]:
 
 
-#Remove all columns with Energy data
-def remove_all_Energies(df):
-    indexes_energie = get_list_indexes_of_Energies(df.iloc[:,:-4])
-    df=df.drop(columns=indexes_energie)
-    return df
+#Get indexes of all columns with Energy data
+def get_list_indexes_of_Energies(df,bool_validation):
+    list_Energies = []
+    if(bool_validation == 0):
+        list_adress = df.loc['Adress']
+        for i in range(len(df.loc['Adress'])-1):
+            if(pd.notnull(list_adress[i])==True):
+                if(list_adress[i][:7] == 'Energie'):
+                    list_Energies.append(i)
+    else:
+        list_adress = df.iloc[0,:]
+        for i in range(2,len(list_adress)-1):
+            if(pd.notnull(list_adress[i])==True):
+                if(list_adress[i][:7] == 'Energie'):
+                    list_Energies.append(i)
+    return list_Energies
 
 
 # In[25]:
 
 
-#Get indexes of columns with Active Energy data 
-def get_list_indexes_of_Energie_active(df):
-    list_Energies = []
-    list_adress = df.loc['Adress']
-    for i in range(len(df.loc['Adress'])-1):
-        if(pd.notnull(list_adress[i])==True):
-            if(list_adress[i][:14] == 'Energie active'):
-                #Remove bug value in Energie active columns
-                if(list_adress[i]!='Energie active TGBT Bat B TDP_04_B1'):
-                    list_Energies.append(i)
-    return list_Energies
+#Remove all columns with Energy data
+def remove_all_Energies(df,bool_validation):
+    indexes_energie = get_list_indexes_of_Energies(df.iloc[:,:-4],bool_validation)
+    df=df.drop(columns=indexes_energie)
+    return df
 
 
 # In[26]:
 
 
-#Modify Energie data in data frame
-def prepare_Energie_in_df(df):
-    indexes_energie_active = get_list_indexes_of_Energie_active(df.iloc[:,:-4])
-    df_energie = df.copy()
-    df_energie = df_energie[indexes_energie_active]
-    df_energie = df_energie.iloc[:-2,:]
-    df = remove_all_Energies(df)
-    return df,df_energie
+#Get indexes of columns with Active Energy data 
+def get_list_indexes_of_Energie_active(df,bool_validation):
+    list_Energies = []
+    if(bool_validation == 0):
+        list_adress = df.loc['Adress']
+        for i in range(len(list_adress)-1):
+            if(pd.notnull(list_adress[i])==True):
+                if(list_adress[i][:14] == 'Energie active'):
+                    #Remove bug value in Energie active columns
+                    if(list_adress[i]!='Energie active TGBT Bat B TDP_04_B1'):
+                        list_Energies.append(i)
+    else :
+        list_adress = df.iloc[0,:].index
+        for i in range(0,len(list_adress)):
+            if(pd.notnull(list_adress[i])==True):
+                if(list_adress[i][:14] == 'Energie active'):
+                    #Remove bug value in Energie active columns
+                    if(list_adress[i]!='Energie active TGBT Bat B TDP_04_B1'):
+                        list_Energies.append(i)
+    return list_Energies
 
 
 # In[27]:
 
 
-#Get the column of total energy
-def get_target_Energie_totale(df_energie):
-    df_energie_totale= df_energie.iloc[:-1,:-1].sum(axis=1)
-    return df_energie_totale
+#Modify Energie data in data frame
+def prepare_Energie_in_df(df,bool_validation):
+    indexes_energie_active = get_list_indexes_of_Energie_active(df.iloc[:,:-4],bool_validation)
+    df_energie = df.copy()
+    df_energie = df_energie.iloc[:,indexes_energie_active]
+    if(bool_validation == 0):
+        df_energie = df_energie.iloc[:-2,:]
+    df = remove_all_Energies(df,bool_validation)
+    return df,df_energie
 
 
 # In[28]:
+
+
+#Get the column of total energy
+def get_target_Energie_totale(df_energie,bool_validation):
+    if(bool_validation == 0):
+        df_energie_totale= df_energie.iloc[:-1,:-1].sum(axis=1)
+    else :
+        df_energie_totale= df_energie.sum(axis=1)
+    return df_energie_totale
+
+
+# In[29]:
 
 
 #This function launch building of two Excel files : one to look at the data and the other one to launch it on Power BI
@@ -425,7 +445,7 @@ def build_excels(df_data,df_just_data,filename):
     Excel_for_Power_BI(df_just_data_copy,df_copy,filename)
 
 
-# In[29]:
+# In[30]:
 
 
 #Launch preparation on brut data to get prepared data with the target
@@ -433,30 +453,45 @@ def launch_pipeline_learning_set(df,data_unités,filename):
     data = preparation_data(df,data_unités)
     build_excels(data,data.iloc[:-3,:],filename)
     all_dates_to_numbers(data)
-    data,energie = prepare_Energie_in_df(data)
-    energie_totale = get_target_Energie_totale(energie)
+    data,energie = prepare_Energie_in_df(data,0)
+    energie_totale = get_target_Energie_totale(energie,0)
     data["Energie"] = energie_totale
     return data,energie
 
 
-# In[30]:
+# In[46]:
 
 
+#Remove na values in validation set
+def remove_na_validation(df_nona):
+    df_nona = df_nona.astype(float)
+    df_nona  = df_nona.interpolate(method='linear')
+    df_nona = df_nona.fillna(method='backfill', axis=0)
+    df_nona = df_nona.fillna(method='ffill', axis=0)
+    return df_nona
+
+
+# In[47]:
+
+
+#Prepare columns for validation set by changing name of columns by Adresses
 def prepare_columns_validation_set(df_validation):
     df_validation.columns = df_validation.loc[0]
     df_validation = df_validation.drop(0) 
     return df_validation
 
 
-# In[31]:
+# In[33]:
 
 
+#Add address, texts and units in validation set
 def add_adress_texts_units(data,df_validation):
     data_validation = pd.DataFrame()
     adress_data_learning = data.loc['Adress'][:-5]
     text_data_learning = data.loc['Texte'][:-5]
     unit_data_learning = data.loc['Unité'][:-5]
     data_validation = df_validation[adress_data_learning]
+    data_validation = remove_na_validation(data_validation)
     adress_data_learning.index = data_validation.columns.values
     text_data_learning.index = data_validation.columns.values
     unit_data_learning.index = data_validation.columns.values
@@ -469,10 +504,22 @@ def add_adress_texts_units(data,df_validation):
     return data_validation
 
 
-# In[32]:
+# In[34]:
 
 
-def launch_pipeline_validation_set(df_validation,filename):   
+#Add energy data for validation set
+def add_energy(data_energie):
+    energy_data_learning = data_energie.loc['Adress']
+    data_validation_energie = df_validation[energy_data_learning]
+    #data_validation_energie = remove_na_validation(data_validation)
+    return data_validation_energie
+
+
+# In[35]:
+
+
+#Launch Pipeline for validation set 
+def launch_pipeline_validation_set(df_validation,filename):
     df_validation = prepare_columns_validation_set(df_validation) 
     dates_bon_format = date_format(df_validation,0)
     data_validation = add_adress_texts_units(data,df_validation)
@@ -482,74 +529,79 @@ def launch_pipeline_validation_set(df_validation,filename):
         dates_bon_format.append("0")
     data_validation['Date'] = dates_bon_format
     all_dates_to_numbers(data_validation)
-    data_validation,energie_validation = prepare_Energie_in_df(data_validation)
-    data_validation_energie = get_target_Energie_totale(energie_validation)
+    data_validation_energie = add_energy(data_energie)
+    data_validation_energie = remove_na_validation(data_validation_energie.iloc[1:,:])
+    save_df_in_excel("test.xlsx",data_validation_energie)
+    data_validation_energie = get_target_Energie_totale(data_validation_energie,1)
     data_validation["Energie"] = data_validation_energie
     return data_validation,data_validation_energie
 
 
-# In[33]:
+# In[36]:
 
 
 #List of locations in regards of BACnet adress
 all_floors_names = [[1,'Local CTA'],[2,'Local CTA RIE'],[3,'Lot CVC Terasse B'],[4,'Lot CVC Terasse A'],[5,'Lot CVC Terasse A numero 2 '],[6,'Local Clim'],[7,'Local CPCU'],[8,'Local GF'],[9,'Lot CVC Terasse B numero 2'],[21,'A-RDC'],[22,'A-1'],[23,'A-2'],[24,'A-3'],[25,'A-4'],[26,'A-5'],[27,'A-6'],[28,'A-7'],[29,'A-Mez'],[30,'A-Meteo'],[31,'B-RDC'],[32,'B-1'],[33,'B-2'],[34,'B-3'],[35,'B-4'],[36,'B-5'],[37,'B-Meteo'],[38,'B-RDC2']]
 
 
-# In[34]:
+# In[37]:
 
 
 #We get the Units Excel file
 data_unités = pd.read_excel('Unités_ref.xlsx')
 
 
-# In[35]:
+# In[38]:
 
 
 #We load the data frame from the "Build data set" Python file
 df = pickle.load(open("data_total.p", "rb") )
 
 
-# In[36]:
+# In[39]:
 
 
 #We load the second data frame from the "Build data set" Python file
 df_validation = pickle.load(open("data_validation.p", "rb") )
 
 
-# In[37]:
+# In[40]:
 
 
 #Launch pipeline on the data frame
 data,data_energie = launch_pipeline_learning_set(df,data_unités,"data_total")   
 
 
-# In[38]:
+# In[41]:
 
 
-data_validation, data_validation_energie = launch_pipeline_validation_set(df_validation,"validation")
+data_validation, data_val_energie = launch_pipeline_validation_set(df_validation,"validation")
 
 
-# In[39]:
+# In[42]:
 
 
 #Save in files the prepared data frame
 pickle.dump(data, open( "data_total_prepared.p", "wb" ) )
 
 
-# In[40]:
+# In[43]:
 
 
+#Save the energy data from data frame
 pickle.dump(data_energie, open( "data_total_energie.p", "wb" ) )
 
 
-# In[41]:
+# In[44]:
 
 
+#Save the validation data 
 pickle.dump(data_validation, open( "data_validation_total_prepared.p", "wb" ) )
 
 
-# In[42]:
+# In[ ]:
 
 
-pickle.dump(data_validation_energie, open( "data_validation_energie.p", "wb" ) )
+#Save the energy validation data
+pickle.dump(data_val_energie, open( "data_validation_energie.p", "wb" ) )
 
