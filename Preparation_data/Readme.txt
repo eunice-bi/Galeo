@@ -1,2 +1,1 @@
-Code de préparation de la data
-Dans un premier temps pour la data visualization 
+Première version des codes pour la préparation des données et l'analyse exploratoire 
